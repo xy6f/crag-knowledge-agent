@@ -1,0 +1,10 @@
+langgraph>=1.0
+openai>=1.100
+sentence-transformers>=5.0
+chromadb>=1.0
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic-settings>=2.0
+pypdf>=5.0
+ddgs>=9.0
+python-multipart>=0.0.9

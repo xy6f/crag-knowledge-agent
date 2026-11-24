@@ -1,0 +1,146 @@
+{
+  "description": "Agentic RAG 评测集：朴素 RAG 基线 vs CRAG Agent 对比",
+  "note": "expected_keywords 用于关键词命中打分；llm_judge_points 给 LLM 评分参考要点",
+  "questions": [
+    {
+      "id": "s1",
+      "type": "simple",
+      "question": "公司弹性打卡的到岗时间范围是什么？",
+      "expected_keywords": ["8:30", "10:00"],
+      "llm_judge_points": "研发序列 8:30-10:00 之间弹性到岗，每日 8 小时"
+    },
+    {
+      "id": "s2",
+      "type": "simple",
+      "question": "出差住宿费一线城市每晚标准是多少？",
+      "expected_keywords": ["400"],
+      "llm_judge_points": "一线城市（北上广深）住宿上限 400 元/晚"
+    },
+    {
+      "id": "s3",
+      "type": "simple",
+      "question": "云途 SaaS 的 API 限流是多少？",
+      "expected_keywords": ["50", "200"],
+      "llm_judge_points": "专业版 50 QPS，旗舰版 200 QPS，标准版不开放"
+    },
+    {
+      "id": "s4",
+      "type": "simple",
+      "question": "公司公积金的缴纳比例是多少？",
+      "expected_keywords": ["12%"],
+      "llm_judge_points": "公积金按工资基数 12% 缴纳"
+    },
+    {
+      "id": "s5",
+      "type": "simple",
+      "question": "会议室单次预订最长多久？",
+      "expected_keywords": ["3"],
+      "llm_judge_points": "单次最长 3 小时，15 分钟未到场自动释放"
+    },
+    {
+      "id": "s6",
+      "type": "simple",
+      "question": "绩效考核连续两个季度 C 档会怎样？",
+      "expected_keywords": ["PIP"],
+      "llm_judge_points": "启动为期 2 个月的绩效改进计划 PIP"
+    },
+    {
+      "id": "m1",
+      "type": "multi_hop",
+      "question": "我入职三年了，年假有几天？想连休请年假需要提前多久申请，找谁审批？",
+      "expected_keywords": ["8", "3"],
+      "llm_judge_points": "满 3 年不满 10 年年假 8 天；提前 3 个工作日 OA 提交；5 天以内直属上级审批，超 5 天部门总监加签"
+    },
+    {
+      "id": "m2",
+      "type": "multi_hop",
+      "question": "采购云途专业版 60 个账号按年付，现在一年要花多少钱？",
+      "expected_keywords": ["129", "60"],
+      "llm_judge_points": "2026 年起专业版 129 元/人/月；60 账号年付满 50 享 95 折：129×60×12×0.95 ≈ 88,056 元（能算或说明折扣都算对）"
+    },
+    {
+      "id": "m3",
+      "type": "multi_hop",
+      "question": "出差住宿超过报销标准自掏腰包可以吗？报销要多久内提交？",
+      "expected_keywords": ["30"],
+      "llm_judge_points": "超标准部分自理；出差结束后 30 个自然日内提交报销单，审批链直属上级→财务专员→财务经理"
+    },
+    {
+      "id": "m4",
+      "type": "multi_hop",
+      "question": "通过软考中级证书能拿多少补贴？拿到后必须为公司服务多久？",
+      "expected_keywords": ["1500", "12"],
+      "llm_judge_points": "中级证书补贴 1500 元；公司报销考试费的证书需承诺服务期 12 个月"
+    },
+    {
+      "id": "t1",
+      "type": "version_trap",
+      "question": "员工年假有几天？",
+      "expected_keywords": ["5", "8", "12"],
+      "llm_judge_points": "必须按现行 V3.0 回答：满1年5天、满3年8天、满10年12天；若答 3 天（已废止 V2.0）为错误"
+    },
+    {
+      "id": "t2",
+      "type": "version_trap",
+      "question": "年假没休完可以留到明年吗？",
+      "expected_keywords": ["3月31日", "结转"],
+      "llm_judge_points": "现行制度：可结转至次年 3 月 31 日；旧版制度为年底清零（错误答案）"
+    },
+    {
+      "id": "t3",
+      "type": "version_trap",
+      "question": "专业版云途一年多少钱一个账号？",
+      "expected_keywords": ["129", "109"],
+      "llm_judge_points": "2026-01-01 起新价 129 元/人/月；2026-03-31 前续费的老客户可锁 109 元；答 99 元（旧价）为错误"
+    },
+    {
+      "id": "t4",
+      "type": "version_trap",
+      "question": "病假期间工资怎么发？",
+      "expected_keywords": ["80%"],
+      "llm_judge_points": "现行 V3.0：按当地最低工资标准 80% 计发；旧版 70% 为错误"
+    },
+    {
+      "id": "o1",
+      "type": "out_of_scope",
+      "question": "今天上海天气怎么样？",
+      "expected_keywords": [],
+      "llm_judge_points": "正确行为：说明这不在知识库范围，不编造；若走联网搜索要明确标注来自网络"
+    },
+    {
+      "id": "o2",
+      "type": "out_of_scope",
+      "question": "帮我写一段 Python 快速排序代码",
+      "expected_keywords": [],
+      "llm_judge_points": "正确行为：说明知识库不含代码教学类内容，可凭模型能力回答但应说明不是来自知识库"
+    },
+    {
+      "id": "o3",
+      "type": "out_of_scope",
+      "question": "公司2026年的营收目标是多少？",
+      "expected_keywords": [],
+      "llm_judge_points": "知识库无此信息，正确行为：明确说明知识库中没有该数据，不编造数字"
+    },
+    {
+      "id": "c1",
+      "type": "chitchat",
+      "question": "你好，你是谁呀？",
+      "expected_keywords": [],
+      "llm_judge_points": "正确行为：直接寒暄+自我介绍（星野知识库助手），不需要检索"
+    },
+    {
+      "id": "c2",
+      "type": "chitchat",
+      "question": "谢谢啦！",
+      "expected_keywords": [],
+      "llm_judge_points": "正确行为：礼貌回应，无需检索"
+    },
+    {
+      "id": "c3",
+      "type": "chitchat",
+      "question": "1+1等于几？",
+      "expected_keywords": [],
+      "llm_judge_points": "正确行为：常识问题直接回答，无需检索知识库"
+    }
+  ]
+}

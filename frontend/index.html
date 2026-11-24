@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic RAG 知识库问答</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🤖</span>
+      <div>
+        <h1>Agentic RAG 知识库问答</h1>
+        <p class="subtitle">星野科技 · CRAG 纠错式检索 Agent</p>
+      </div>
+    </div>
+    <div class="status-chips">
+      <span id="chip-api" class="chip">检测中…</span>
+      <span id="chip-kb" class="chip">知识库加载中…</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 聊天区 -->
+    <section class="chat-panel">
+      <div id="chat-window" class="chat-window">
+        <div class="welcome card">
+          <h2>👋 你好，我是星野知识库助手</h2>
+          <p>基于 <b>CRAG 纠错式 Agentic RAG</b>：检索结果会先经过相关性打分，不合格时自动<b>改写查询重试</b>甚至<b>联网兜底</b>，回答生成后还有<b>幻觉自检</b>。右侧可实时观察 Agent 的每一步决策。</p>
+          <div class="example-grid">
+            <button class="example" data-q="员工年假有几天？">员工年假有几天？（陷阱题）</button>
+            <button class="example" data-q="我入职三年了，年假有几天？想连休请年假需要提前多久申请，找谁审批？">年假天数 + 审批流程（多跳题）</button>
+            <button class="example" data-q="采购云途专业版 60 个账号按年付，一年多少钱？">云途专业版报价（调价陷阱）</button>
+            <button class="example" data-q="今天上海天气怎么样？">超纲题（看联网兜底）</button>
+          </div>
+        </div>
+      </div>
+      <div class="input-bar">
+        <textarea id="question" rows="1" placeholder="输入问题，Enter 发送 / Shift+Enter 换行"></textarea>
+        <button id="btn-send" class="btn-primary">发送</button>
+      </div>
+    </section>
+
+    <!-- 右侧：决策时间线 + 知识库 -->
+    <aside class="side-panel">
+      <div class="panel trace-panel">
+        <h3>🧭 Agent 决策过程</h3>
+        <div id="trace-empty" class="trace-empty">提问后，Agent 的每一步（路由 / 检索 / 打分 / 改写 / 联网 / 生成 / 自检）会实时显示在这里。</div>
+        <ul id="trace-list" class="trace-list"></ul>
+      </div>
+
+      <div class="panel kb-panel">
+        <h3>📚 知识库</h3>
+        <div class="kb-actions">
+          <label class="btn-ghost file-btn">
+            <input type="file" id="file-input" accept=".md,.txt,.pdf" hidden />
+            ⬆️ 上传文档
+          </label>
+          <button id="btn-rebuild" class="btn-ghost">♻️ 重建示例语料</button>
+        </div>
+        <ul id="doc-list" class="doc-list"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
