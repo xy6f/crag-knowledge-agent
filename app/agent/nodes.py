@@ -17,9 +17,36 @@ from app.agent.prompts import (
     ROUTE_SYSTEM,
 )
 from app.config import settings
-from app.llm import chat, chat_json
+from app.llm import MissingAPIKeyError, chat, chat_json, chat_stream
 from app.rag import store
 from app.rag.baseline import format_context
+
+
+def _get_writer():
+    """取 LangGraph 自定义流写入器（不可用时返回 None，降级为非流式）。"""
+    try:
+        from langgraph.config import get_stream_writer
+
+        return get_stream_writer()
+    except Exception:
+        return None
+
+
+def _stream_llm(messages: list[dict], writer) -> str:
+    """流式生成并把 token 实时转发给前端；异常时回退非流式调用。"""
+    if writer:
+        writer({"type": "answer_reset"})  # 通知前端清空当前答案气泡（重生成场景）
+    parts: list[str] = []
+    try:
+        for piece in chat_stream(messages):
+            parts.append(piece)
+            if writer:
+                writer({"type": "token", "text": piece})
+        return "".join(parts).strip()
+    except MissingAPIKeyError:
+        raise
+    except Exception:
+        return chat(messages).strip()
 
 
 def _ev(step: str, label: str, detail: str, started: float, status: str = "done") -> dict:
@@ -65,7 +92,7 @@ def direct_chat_node(state: dict) -> dict:
     messages = [{"role": "system", "content": DIRECT_CHAT_SYSTEM}] + history + [
         {"role": "user", "content": state["question"]}
     ]
-    answer = chat(messages)
+    answer = _stream_llm(messages, _get_writer())
     return {
         "answer": answer,
         "sources": [],
@@ -200,11 +227,12 @@ def generate_node(state: dict) -> dict:
     if state.get("rewritten_query"):
         user += f"\n（优化后检索词：{state['rewritten_query']}）"
 
-    generation = chat(
+    generation = _stream_llm(
         [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
-        ]
+        ],
+        _get_writer(),
     )
     src_label = f"依据 {'知识库 %d 条' % len(graded) if graded else '联网结果 %d 条' % len(web) if web else '无资料'}"
     return {

@@ -52,8 +52,18 @@ async def _event_stream(req: ChatRequest) -> AsyncIterator[str]:
     trace: list[dict] = []
     final_patch: dict | None = None
     try:
-        async for update in graph.astream(initial, config={"recursion_limit": 30}):
-            for node, patch in update.items():
+        async for mode, payload in graph.astream(
+            initial, config={"recursion_limit": 30}, stream_mode=["updates", "custom"]
+        ):
+            if mode == "custom":
+                # 节点内实时转发的 token 流
+                ptype = payload.get("type") if isinstance(payload, dict) else None
+                if ptype == "token":
+                    yield _sse({"type": "delta", "text": payload.get("text", "")})
+                elif ptype == "answer_reset":
+                    yield _sse({"type": "reset"})
+                continue
+            for node, patch in payload.items():
                 if not isinstance(patch, dict):
                     continue
                 for ev in patch.get("trace") or []:

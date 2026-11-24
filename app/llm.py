@@ -44,6 +44,22 @@ def chat(messages: list[dict], json_mode: bool = False, temperature: float | Non
     return (resp.choices[0].message.content or "").strip()
 
 
+def chat_stream(messages: list[dict], temperature: float | None = None):
+    """流式调用对话模型，逐 token 产出文本增量。"""
+    stream = get_client().chat.completions.create(
+        model=settings.deepseek_model,
+        messages=messages,
+        temperature=settings.llm_temperature if temperature is None else temperature,
+        stream=True,
+    )
+    for chunk in stream:
+        if not chunk.choices:
+            continue
+        delta = chunk.choices[0].delta.content
+        if delta:
+            yield delta
+
+
 def parse_json(text: str) -> dict:
     """容错解析 LLM 输出的 JSON（剥掉 markdown 代码块围栏等）。"""
     try:
