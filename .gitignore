@@ -6,3 +6,4 @@ data/chroma/
 data/uploads/
 models/
 .pytest_cache/
+.idea/
