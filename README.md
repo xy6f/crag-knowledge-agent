@@ -1,5 +1,10 @@
 # Agentic RAG 知识库问答系统
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Python](https://img.shields.io/badge/python-3.13-blue)
+![LangGraph](https://img.shields.io/badge/LangGraph-1.x-green)
+![DeepSeek](https://img.shields.io/badge/LLM-DeepSeek-orange)
+
 一个**带自反思能力的纠错式 RAG（CRAG + Self-RAG）**项目：检索结果先打分、不合格自动改写重试、再不行联网兜底，回答生成后还有幻觉自检——并用评测数据量化它对朴素 RAG 的提升。
 
 > 区别于「检索 → 生成」一条道走到黑的朴素 RAG，本项目把 RAG 做成了一个 **LangGraph 状态机 Agent**，且全流程决策可视化、可量化评测。
@@ -106,3 +111,7 @@ E:\anaconda3\python.exe -m venv .venv
 - **打分一次调用评完所有候选**：省 token 省延迟；打分失败时降级为「全部保留」，不让 LLM 单点故障中断主流程。
 - **Embedding 放本地而非 API**：DeepSeek 无 embedding 接口；本地小模型对中文短文档效果足够，且零成本、数据不出本机。
 - **改写上限 2 轮 + 重生成上限 1 次**：用配置控制循环预算，防止 Agent 失控空转。
+
+## License
+
+[MIT](LICENSE) — 自由使用、修改、分发，保留版权声明即可。
